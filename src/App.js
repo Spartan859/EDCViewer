@@ -35,7 +35,9 @@ const App = () => {
   //新建一个函数用于将设置的参数存入localstorage
   const saveSettingsToLocalStorage = (title) => {
     console.log(title,currentConfigs[title]);
+    if(currentConfigs[title]!==undefined){
       localStorage.setItem('config_'+title, JSON.stringify(currentConfigs[title]));
+    }
   };
 
   function nullOrDefault(inputValue, defaultValue) {
@@ -538,10 +540,12 @@ const App = () => {
       }
     },
     [isOpen]
-  );
+  ,[currentConfigs]);
   const setCurrentConfig = (config,name) => {
-    setCurrentConfigs({...currentConfigs,[name]:config})
-    //console.log('Saving to currentConfig',name,currentConfigs[name])
+    var tmp_config=currentConfigs
+    tmp_config[name]=config
+    setCurrentConfigs(tmp_config)
+    console.log('Saving to currentConfig',name,config)
   }
   const [calibrating, setCalibrating] = useState(false);
   const finishCalibrate1 = (corner) => {
