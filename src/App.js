@@ -23,7 +23,7 @@ const App = () => {
   const [player2, setPlayer2] = useState(null);
   const [mines, setMines] = useState([]);
   const [chunks, setChunks] = useState([]);
-  const [ipAddress, setIPAddress] = useState('');
+  const [ipAddress, setIPAddress] = useState(localStorage.getItem("ipAddress") || "127.0.0.1:8080");
   const [isOpen, setIsOpen] = useState(true);
   const [stage, setStage] = useState(STAGES[0]);
   const [ticks, setTicks] = useState(0);
@@ -31,6 +31,12 @@ const App = () => {
 
   var player1Camera = -1;
   var player2Camera = -1;
+  const [currentConfigs, setCurrentConfigs] = useState({});
+  //新建一个函数用于将设置的参数存入localstorage
+  const saveSettingsToLocalStorage = (title) => {
+    console.log(title,currentConfigs[title]);
+      localStorage.setItem('config_'+title, JSON.stringify(currentConfigs[title]));
+  };
 
   function nullOrDefault(inputValue, defaultValue) {
     if (inputValue === null || inputValue === undefined || isNaN(inputValue)) {
@@ -489,6 +495,9 @@ const App = () => {
           setTimeout(() => {
             const confirm = document.getElementById("confirmbutton");
             confirm.onclick = () => {
+              saveSettingsToLocalStorage('Player 1');
+              saveSettingsToLocalStorage('Player 2');
+              console.log('saved to localStorage');
               if (calibrated1 && calibrated2) {
                 ws.send(JSON.stringify(data2()));
                 console.log('send data2');
@@ -530,7 +539,10 @@ const App = () => {
     },
     [isOpen]
   );
-
+  const setCurrentConfig = (config,name) => {
+    setCurrentConfigs({...currentConfigs,[name]:config})
+    //console.log('Saving to currentConfig',name,currentConfigs[name])
+  }
   const [calibrating, setCalibrating] = useState(false);
   const finishCalibrate1 = (corner) => {
     setCalibrating(false);
@@ -556,6 +568,7 @@ const App = () => {
   const handleConfirm = () => {
     console.log('保存的IP地址为:', ipAddress);
     setIsOpen(false);
+    localStorage.setItem('ipAddress',ipAddress);
   };
 
   return (
@@ -600,8 +613,8 @@ const App = () => {
               content={(
                 <div>
                   <div class='flex'>
-                    <SettingsItem title='Player 1' />
-                    <SettingsItem title='Player 2' />
+                    <SettingsItem title='Player 1' getDataFunc={setCurrentConfig}/>
+                    <SettingsItem title='Player 2' getDataFunc={setCurrentConfig}/>
                   </div>
                   <Button id="confirmbutton">Confirm</Button>
                 </div>
