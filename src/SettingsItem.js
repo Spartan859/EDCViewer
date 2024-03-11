@@ -1,21 +1,59 @@
 import './SettingsItem.css'
 
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 
-const SettingsItem = ({ title }) => {
-    const [hue, setHue] = useState({ center: undefined, range: undefined });
-    const [saturation, setSatuarion] = useState({ center: undefined, range: undefined });
-    const [value, setValue] = useState({ center: undefined, range: undefined });
-    const [minArea, setMinArea] = useState(undefined);
-    const [camera, SetCamera] = useState('');
-    const [port, setPort] = useState('');
-    const [showMask, setShowMask] = useState(false);
-    const [baudRate, setBaudRate] = useState('115200');
-    const [cameraContrast, setCameraContrast] = useState(undefined);
-    const [cameraBrightness, setCameraBrightness] = useState(undefined);
-    const [cameraExposure, setCameraExposure] = useState(undefined);
-    const [cameraAutoExposure, setCameraAutoExposure] = useState(undefined);
-    const [cameraSaturation, setCameraSaturation] = useState(undefined);
+const SettingsItem = ({ title , getDataFunc}) => {
+    const defaultConfig = JSON.parse(localStorage.getItem('config_'+title)) || {
+        hue: { center: 10, range: 20 },
+        saturation: { center: 200, range: 100 },
+        value: { center: 200, range: 100 },
+        minArea: 0,
+        camera: '',
+        port: '',
+        showMask: false,
+        baudRate: '115200',
+        cameraContrast: undefined,
+        cameraBrightness: undefined,
+        cameraExposure: undefined,
+        cameraAutoExposure: undefined,
+        cameraSaturation: undefined
+    };
+
+    const [hue, setHue] = useState(defaultConfig.hue);
+    const [saturation, setSaturation] = useState(defaultConfig.saturation);
+    const [value, setValue] = useState(defaultConfig.value);
+    const [minArea, setMinArea] = useState(defaultConfig.minArea);
+    const [camera, setCamera] = useState(defaultConfig.camera);
+    const [port, setPort] = useState(defaultConfig.port);
+    const [showMask, setShowMask] = useState(defaultConfig.showMask);
+    const [baudRate, setBaudRate] = useState(defaultConfig.baudRate);
+    const [cameraContrast, setCameraContrast] = useState(defaultConfig.cameraContrast);
+    const [cameraBrightness, setCameraBrightness] = useState(defaultConfig.cameraBrightness);
+    const [cameraExposure, setCameraExposure] = useState(defaultConfig.cameraExposure);
+    const [cameraAutoExposure, setCameraAutoExposure] = useState(defaultConfig.cameraAutoExposure);
+    const [cameraSaturation, setCameraSaturation] = useState(defaultConfig.cameraSaturation);
+
+    useEffect(() => {
+        console.log('useEffect in settingsItem.js');
+        const config = {
+            hue,
+            saturation,
+            value,
+            minArea,
+            camera,
+            port,
+            showMask,
+            baudRate,
+            cameraContrast,
+            cameraBrightness,
+            cameraExposure,
+            cameraAutoExposure,
+            cameraSaturation
+        };
+        console.log(title,config)
+        getDataFunc(config, title);
+    }, [hue, saturation, value, minArea, camera, port, showMask, baudRate, cameraContrast, cameraBrightness, cameraExposure, cameraAutoExposure, cameraSaturation]);
+    
     return (
 
         <div class='settings-container'>
@@ -39,11 +77,11 @@ const SettingsItem = ({ title }) => {
                     <div class='settings-item-value-container'>
                         <input type='number' class='color-value' placeholder='center'
                             value={saturation.center}
-                            onChange={(e) => setSatuarion({ center: e.target.value, range: saturation.range })}
+                            onChange={(e) => setSaturation({ center: e.target.value, range: saturation.range })}
                         />
                         <input type='number' class='color-value' placeholder='range'
                             value={saturation.range}
-                            onChange={(e) => setSatuarion({ center: saturation.center, range: e.target.value })}
+                            onChange={(e) => setSaturation({ center: saturation.center, range: e.target.value })}
                         />
                     </div>
                 </div>
@@ -74,7 +112,7 @@ const SettingsItem = ({ title }) => {
                     <div class='settings-item-value-container'>
                         <select class='camera-select'
                             value={camera}
-                            onChange={(e) => SetCamera(e.target.value)}
+                            onChange={(e) => setCamera(e.target.value)}
                         >
                             <option>0</option>
                             <option>1</option>
